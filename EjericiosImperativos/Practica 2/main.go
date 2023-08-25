@@ -5,19 +5,25 @@ import (
 	"sort"
 )
 
+// Definición de la estructura Producto para almacenar información de los productos.
 type Product struct {
 	name  string
 	stock int
 	price int
 }
 
+// Definición de un tipo Products para manejar una lista de Productos.
 type Products []Product
 
+// Lista global de productos.
 var productsList Products
 
-const minimumExistence int = 10 //la existencia mínima es el número mínimo debajo de el cual se deben tomar eventuales desiciones
+// Existencia mínima, utilizada para tomar decisiones sobre productos.
+const minimumExistence int = 10
 
-func (p *Products) searchProduct(name string) (*Product, int) { //el retorno es el índice del producto encontrado y -1 si no existe
+// Función para buscar un producto en la lista de productos.
+// Retorna el producto encontrado y un valor de error (0 si no hay error, números mayores si hay algún error).
+func (p *Products) searchProduct(name string) (*Product, int) {
 	err := 1
 	for i := 0; i < len(*p); i++ {
 		if (*p)[i].name == name {
@@ -28,33 +34,30 @@ func (p *Products) searchProduct(name string) (*Product, int) { //el retorno es 
 	return nil, err
 }
 
-//modifique la función para que esta vez solo retorne el producto como tal y que retorne otro valor adicional "err" conteniendo un 0 si no hay error y números mayores si existe algún
-//tipo de error como por ejemplo que el producto no exista. Una vez implementada la nueva función, cambie los usos de la anterior función en funciones posteriores, realizando los cambios
-//que el uso de la nueva función ameriten
-
+// Función para agregar un producto a la lista de productos.
+// Actualiza la existencia y el precio si el producto ya existe.
 func (p *Products) addProduct(name string, stock int, price int) {
 	product, err := p.searchProduct(name)
 	if err == 0 {
 		product.stock = product.stock + stock
 		product.price = price
-		fmt.Println("Product updated.")
+		fmt.Println("Producto actualizado.")
 	} else {
 		*p = append(*p, Product{name: name, stock: stock, price: price})
-		fmt.Println("Product added.")
+		fmt.Println("Producto agregado.")
 	}
 	fmt.Println()
-	// modificar el código para que cuando se agregue un producto, si este ya se encuentra, incrementar la cantidad
-	// de elementos del producto y eventualmente el precio si es que es diferente
 }
 
+// Función para agregar múltiples productos a la lista.
 func (p *Products) addManyProducts(products ...Product) {
 	for _, i := range products {
 		p.addProduct(i.name, i.stock, i.price)
 	}
 }
 
-// Hacer una función adicional que reciba una cantidad potencialmente infinita de productos previamente creados y los agregue a la lista
-
+// Función para vender productos.
+// Reduce el stock y elimina el producto si no hay existencia.
 func (p *Products) sellProduct(name string, sells int) {
 	var index int
 	product, err := p.searchProduct(name)
@@ -67,30 +70,28 @@ func (p *Products) sellProduct(name string, sells int) {
 					}
 				}
 				*p = append((*p)[:index], (*p)[index+1:]...)
-				fmt.Println("No stock. Product erased.")
+				fmt.Println("No hay stock. Producto eliminado.")
 				break
 			} else {
 				product.stock--
-				fmt.Println("Product sold.")
+				fmt.Println("Producto vendido.")
 			}
 		}
 		fmt.Println()
-		//modificar para que cuando no haya existencia de cantidad de productos, el producto se elimine de "la lista" y notificar dicha acción
-		//modifique posteriormente para que se ingrese de parámetro la cantidad de productos a vender
 	}
 }
 
+// Función para actualizar el precio de un producto.
 func (p *Products) updatePrice(name string, price int) {
 	product, err := p.searchProduct(name)
 	if err == 0 {
 		product.price = price
-		fmt.Println("Price updated.")
+		fmt.Println("Precio actualizado.")
 		fmt.Println()
 	}
 }
 
-//haga una función para a partir del nombre del producto, se pueda modificar el precio del mismo Pero utilizando la función buscarProducto MODIFICADA PREVIAMENTE
-
+// Función para obtener productos con existencia mínima.
 func (p *Products) minimumExistenceProducts() Products {
 	var minExProducts Products
 	for i := 0; i < len(*p); i++ {
@@ -98,10 +99,10 @@ func (p *Products) minimumExistenceProducts() Products {
 			minExProducts = append(minExProducts, (*p)[i])
 		}
 	}
-	// debe retornar una nueva lista con productos con existencia mínima
 	return minExProducts
 }
 
+// Función para reponer productos con existencia mínima.
 func (p *Products) restockMinimumExistenceProducts(minExProducts Products) {
 	for _, min := range minExProducts {
 		min.stock = minimumExistence - min.stock
@@ -109,18 +110,21 @@ func (p *Products) restockMinimumExistenceProducts(minExProducts Products) {
 	}
 }
 
+// Función para ordenar productos por nombre.
 func (p *Products) sortProductsByName() {
 	sort.Slice(*p, func(i, j int) bool {
 		return (*p)[i].name < (*p)[j].name
 	})
 }
 
+// Función para ordenar productos por precio.
 func (p *Products) sortProductsByPrice() {
 	sort.Slice(*p, func(i, j int) bool {
 		return (*p)[i].price < (*p)[j].price
 	})
 }
 
+// Función para agregar datos iniciales a la lista de productos.
 func addData() {
 	p1 := Product{"Arroz", 15, 2500}
 	p2 := Product{"Frijoles", 4, 2000}
@@ -145,7 +149,12 @@ func main() {
 	fmt.Println(productsList)
 	fmt.Println()
 
-	fmt.Println("Selling products...")
+	fmt.Println("Actualizando el precio del arroz...")
+	productsList.updatePrice("Arroz", 3000)
+	fmt.Println(productsList)
+	fmt.Println()
+
+	fmt.Println("Vendiendo productos...")
 	productsList.sellProduct("Arroz", 20)
 	fmt.Println(productsList)
 	fmt.Println()
@@ -154,21 +163,21 @@ func main() {
 	fmt.Println(productsList)
 	fmt.Println()
 
-	fmt.Println("Minimum existences:")
+	fmt.Println("Existencias mínimas:")
 	fmt.Println(productsList.minimumExistenceProducts())
 	fmt.Println()
 
-	fmt.Println("Restocking minimum existences")
+	fmt.Println("Reponiendo existencias mínimas")
 	productsList.restockMinimumExistenceProducts(productsList.minimumExistenceProducts())
 	fmt.Println(productsList)
 	fmt.Println()
 
-	fmt.Println("Sort by name:")
+	fmt.Println("Ordenar por nombre:")
 	productsList.sortProductsByName()
 	fmt.Println(productsList)
 	fmt.Println()
 
-	fmt.Println("Sort by price:")
+	fmt.Println("Ordenar por precio:")
 	productsList.sortProductsByPrice()
 	fmt.Println(productsList)
 	fmt.Println()
