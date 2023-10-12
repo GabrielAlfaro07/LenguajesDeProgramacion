@@ -20,7 +20,7 @@ func (c *Calzado) agregarModelo(modelo string) {
 // Método para agregar el precio a la estructura Calzado con validación.
 func (c *Calzado) agregarPrecio(precio int) error {
 	if precio < 0 {
-		return errors.New("el precio debe ser mayor a 0")
+		return errors.New("El precio debe ser mayor a 0")
 	}
 	c.precio = precio
 	return nil
@@ -29,7 +29,7 @@ func (c *Calzado) agregarPrecio(precio int) error {
 // Método para agregar la talla a la estructura Calzado con validación.
 func (c *Calzado) agregarTalla(talla int) error {
 	if talla < 34 || talla > 44 {
-		return errors.New("la talla debe estar entre el 34 y el 44")
+		return errors.New("La talla debe estar entre el 34 y el 44")
 	}
 	c.talla = talla
 	return nil
@@ -49,7 +49,7 @@ func (i *Inventario) agregarCalzado(calzado Calzado) {
 // Método para agregar el stock a la estructura Inventario con validación.
 func (i *Inventario) agregarStock(stock int) error {
 	if stock < 0 {
-		return errors.New("la cantidad de stock debe ser positiva")
+		return errors.New("La cantidad de stock debe ser positiva")
 	}
 	i.stock = stock
 	return nil
@@ -70,14 +70,14 @@ func (t *Tienda) venderCalzado(modelo string, talla int) error {
 	for i, inventario := range t.inventario {
 		if inventario.calzado.modelo == modelo && inventario.calzado.talla == talla {
 			if inventario.stock < 0 {
-				return errors.New("no hay stock disponible del calzado solicitado")
+				return errors.New("No hay stock disponible del calzado solicitado")
 			} else {
 				t.inventario[i].stock--
 				return nil
 			}
 		}
 	}
-	return errors.New("no se encontró el calzado")
+	return errors.New("No se encontró el calzado")
 }
 
 // Método para imprimir el inventario de la tienda.
@@ -113,7 +113,6 @@ func main() {
 			fmt.Println("En la posición", i, "=")
 			print(err.Error())
 			fmt.Println()
-			continue
 		}
 
 		err = calzado.agregarTalla(tallas[i])
@@ -122,7 +121,6 @@ func main() {
 			fmt.Println("En la posición", i, "=")
 			print(err.Error())
 			fmt.Println()
-			continue
 		}
 
 		inventario := Inventario{}
@@ -135,7 +133,6 @@ func main() {
 			fmt.Println("En la posición", i, "=")
 			print(err.Error())
 			fmt.Println()
-			continue
 		}
 
 		tiendaCalzado.agregarInventario(inventario)
